@@ -25,8 +25,8 @@ index 7e4f6f5..4e19c20 100644
 @@ -83,6 +83,6 @@ COMPILE_M = $(call COMPILE,OBJCC)
  
  %.o: %.rc
--	$(WINDRES) $(IFLAGS) --preprocessor "$(DEPCC) -E -xc-header -DRC_INVOKED $(CC_DEPFLAGS)" -o $@ $<
-+	$(WINDRES) $(IFLAGS) --preprocessor "$(DEPCC)" $(foreach ARG,-E -xc-header -DRC_INVOKED $(CC_DEPFLAGS),--preprocessor-arg "$(ARG)") -o $@ $<
+-	$(WINDRES) $(IFLAGS) --preprocessor "$(DEPWINDRES) -E -xc-header -DRC_INVOKED $(CC_DEPFLAGS)" -o $@ $<
++	$(WINDRES) $(IFLAGS) --preprocessor "$(DEPWINDRES)" $(foreach ARG,-E -xc-header -DRC_INVOKED $(CC_DEPFLAGS),--preprocessor-arg "$(ARG)") -o $@ $<
  
  %.i: %.c
  	$(CC) $(CCFLAGS) $(CC_E) $<
