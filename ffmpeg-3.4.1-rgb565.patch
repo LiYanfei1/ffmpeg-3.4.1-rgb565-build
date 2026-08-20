@@ -1,0 +1,20 @@
+diff --git a/libavdevice/dshow.c b/libavdevice/dshow.c
+index 603957a..d4ca565 100644
+--- a/libavdevice/dshow.c
++++ b/libavdevice/dshow.c
+@@ -33,6 +33,15 @@
+ 
+ static enum AVPixelFormat dshow_pixfmt(DWORD biCompression, WORD biBitCount)
+ {
++    /*
++     * The FX3 UVC descriptor exposes MEDIASUBTYPE_RGB565:
++     *   E436EB7B-524F-11CE-9F53-0020AF0BA770
++     * Some FX3 drivers put the GUID's first DWORD directly in
++     * BITMAPINFOHEADER::biCompression instead of BI_BITFIELDS/BI_RGB.
++     */
++    if (biCompression == 0xE436EB7B && biBitCount == 16)
++        return AV_PIX_FMT_RGB565LE;
++
+     switch(biCompression) {
+     case BI_BITFIELDS:
+     case BI_RGB:
