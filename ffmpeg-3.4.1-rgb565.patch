@@ -22,7 +22,7 @@ diff --git a/ffbuild/common.mak b/ffbuild/common.mak
 index 7e4f6f5..4e19c20 100644
 --- a/ffbuild/common.mak
 +++ b/ffbuild/common.mak
-@@ -83,7 +83,7 @@ COMPILE_M = $(call COMPILE,OBJCC)
+@@ -83,6 +83,6 @@ COMPILE_M = $(call COMPILE,OBJCC)
  
  %.o: %.rc
 -	$(WINDRES) $(IFLAGS) --preprocessor "$(DEPCC) -E -xc-header -DRC_INVOKED $(CC_DEPFLAGS)" -o $@ $<
