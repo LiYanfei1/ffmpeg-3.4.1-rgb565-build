@@ -1,0 +1,72 @@
+name: Build FFmpeg 3.4.1 RGB565
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-windows-x64:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout patch repository
+        uses: actions/checkout@v4
+
+      - name: Install MinGW cross compiler
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            git \
+            make \
+            mingw-w64 \
+            nasm \
+            yasm \
+            pkg-config
+
+      - name: Download FFmpeg 3.4.1
+        run: |
+          git clone --branch n3.4.1 --depth 1 \
+            https://git.ffmpeg.org/ffmpeg.git \
+            ffmpeg
+
+      - name: Apply RGB565 patch
+        run: |
+          cd ffmpeg
+          git apply ../ffmpeg-3.4.1-rgb565.patch
+          git diff --check
+          git diff -- libavdevice/dshow.c
+
+      - name: Configure
+        run: |
+          cd ffmpeg
+          ./configure \
+            --prefix="$GITHUB_WORKSPACE/install" \
+            --target-os=mingw32 \
+            --arch=x86_64 \
+            --cross-prefix=x86_64-w64-mingw32- \
+            --enable-cross-compile \
+            --enable-shared \
+            --disable-static \
+            --disable-debug \
+            --disable-doc \
+            --disable-ffplay \
+            --enable-indev=dshow
+
+      - name: Build
+        run: |
+          cd ffmpeg
+          make -j2
+          make install
+
+      - name: Show generated files
+        run: |
+          find install -maxdepth 2 -type f -print
+
+      - name: Upload Windows DLLs
+        uses: actions/upload-artifact@v4
+        with:
+          name: ffmpeg-3.4.1-rgb565-win64
+          path: |
+            install/bin/*.dll
+            install/bin/ffmpeg.exe
+            install/bin/ffprobe.exe
+          retention-days: 14
